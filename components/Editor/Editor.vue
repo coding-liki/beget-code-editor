@@ -12,7 +12,7 @@ import * as Y from 'yjs'
 import { yCollab } from 'y-codemirror.next'
 
 import {EditorView, keymap} from "@codemirror/view";
-import {defaultKeymap, indentWithTab} from "@codemirror/commands";
+import {indentWithTab} from "@codemirror/commands";
 import {ref} from "vue";
 import {NuxtSocket} from "nuxt-socket-io";
 import {WebsocketProvider} from "y-websocket";
@@ -20,7 +20,8 @@ import {WebsocketProvider} from "y-websocket";
 const props = defineProps<{
   id?: string,
   roomName: string,
-  name: string
+  name: string,
+  websocketServer: string
 }>();
 
 
@@ -32,7 +33,7 @@ onMounted(() => {
   const ydoc = new Y.Doc()
   const ctx = useNuxtApp();
   
-  const provider = new WebsocketProvider('ws://localhost:1234/',props.roomName, ydoc);
+  const provider = new WebsocketProvider(props.websocketServer,props.roomName, ydoc);
   
   const yText = ydoc.getText('codemirror')
   const undoManager = new Y.UndoManager(yText)

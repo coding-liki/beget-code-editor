@@ -1,9 +1,3 @@
 export default defineAppConfig({
-    title: 'Hello Nuxt',
-    theme: {
-        dark: true,
-        colors: {
-            primary: '#ff0000'
-        }
-    }
+    websocketServer: 'ws://code-edit.coding-liki.ru:1234/'
 })
