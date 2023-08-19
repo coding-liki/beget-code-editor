@@ -1,4 +1,5 @@
 <template>
+    <div >{{roomName}} - {{name}} </div>
   <div :id="id" class="code-editor" ref="editorDiv">
   </div>
 </template>

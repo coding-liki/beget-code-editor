@@ -1,10 +1,10 @@
 <template>
-    <Editor :room-name=$route.params.roomName :name=$route.params.name :websocket-server=appConfig.websocketServer>
+    <Editor :room-name=$route.params.roomName :name=$route.params.name :websocket-server=runtimeConfig.public.websocketHost>
     
     </Editor>
 </template>
 
 <script setup lang="ts">
-    const appConfig = useAppConfig()
+    const runtimeConfig = useRuntimeConfig()
 
 </script>
