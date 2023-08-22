@@ -1,5 +1,5 @@
 <template>
-    <div >{{roomName}} - {{name}} </div>
+    <div >{{roomName}} - {{name}} <div v-for="client in clients">{{client.user.name}}</div></div>
   <div :id="id" class="code-editor" ref="editorDiv">
   </div>
 </template>
@@ -8,6 +8,7 @@
 import {EditorState, Transaction} from "@codemirror/state";
 import {basicSetup} from "codemirror";
 import {php} from "@codemirror/lang-php";
+import {cpp} from "@codemirror/lang-cpp";
 import {javascript} from "@codemirror/lang-javascript";
 import * as Y from 'yjs'
 import { yCollab } from 'y-codemirror.next'
@@ -25,17 +26,20 @@ const props = defineProps<{
   websocketServer: string
 }>();
 
-
-
 let editorDiv = ref(null)
 let socket: NuxtSocket|undefined = undefined;
+let clients = ref([]);
 onMounted(() => {
   
   const ydoc = new Y.Doc()
   const ctx = useNuxtApp();
   
   const provider = new WebsocketProvider(props.websocketServer,props.roomName, ydoc);
-  
+  provider.awareness.on('update', event => {
+    clients.value = Array.from(provider.awareness.getStates().values());
+    console.log(clients.value);
+
+  });
   const yText = ydoc.getText('codemirror')
   const undoManager = new Y.UndoManager(yText)
   
@@ -49,8 +53,8 @@ onMounted(() => {
     extensions: [
       basicSetup,
       keymap.of([indentWithTab]),
-      php(),
-      javascript(),
+      php({plain: true}),
+      cpp(),
       yCollab(yText, provider.awareness, { undoManager })
     ]
   })
@@ -66,22 +70,6 @@ onMounted(() => {
   let view = new EditorView({
     state: startState,
     parent: editorDiv.value,
-//    dispatch: (transaction: Transaction, view: EditorView): void => {
-//      console.log(transaction);
-//      socket?.emit('addTransaction', {transaction: transaction}, (response) => {
-//        let newTransaction = new Transaction();
-//        
-//        console.log(response)
-//        response.transaction.startState = transaction.startState;
-//        view.update([response.transaction]);
-//      });
-//  
-////      let previousState = transaction.startState;
-////      setTimeout(() => {
-////        view.setState(previousState);
-////        transaction.startState = view.state
-////      }, 1000)
-//    }
   });
 });
 

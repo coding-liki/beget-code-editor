@@ -17,6 +17,7 @@
 </template>
 
 <script>
+  import nuxtStorage from 'nuxt-storage';
 
   export default {
       methods: {
@@ -24,29 +25,34 @@
               const { valid } = await this.$refs.form.validate()
               const router = useRouter();
               if(valid){
-                  await router.push("/editor-"+this.roomName+"/"+this.name);
+                  nuxtStorage.localStorage.setData('userName', this.name, 1, 'd');
+                  await router.push("/editor/"+this.roomName);
               }
           },
       },
-      data: () => ({
-          roomName: '',
-          roomNameRules: [
-              value => {
-                  if (value) return true
+      data: () => {
+          const route = useRoute()
 
-                  return  'Укажите комнату';
-              },
-              ],
+          return ({
+              roomName: route.query.roomName ?? '',
+              roomNameRules: [
+                  value => {
+                      if (value) return true
 
-          name: '',
-          nameRules: [
-              value => {
-                  if (value) return true
+                      return  'Укажите комнату';
+                  },
+                  ],
 
-                  return  'Укажите имя';
-              },
-              ],
-      }),
+              name: '',
+              nameRules: [
+                  value => {
+                      if (value) return true
+
+                      return  'Укажите имя';
+                  },
+                  ],
+          })
+      },
   }
 </script>
 
