@@ -3,6 +3,8 @@
         v-if="nuxtStorage.localStorage?.getData('userName')"
         :room-name=$route.params.name
         :name="nuxtStorage.localStorage?.getData('userName')"
+        :user-color="nuxtStorage.localStorage?.getData('userColor')"
+        :user-light-color="nuxtStorage.localStorage?.getData('userLightColor')"
         :websocket-server=runtimeConfig.public.websocketHost>
     </Editor>
 </template>

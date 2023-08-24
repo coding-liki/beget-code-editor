@@ -31,12 +31,16 @@ const props = defineProps<{
   id?: string,
   roomName: string,
   name: string,
+  userColor: string,
+  userLightColor: string,
   websocketServer: string
 }>();
 
 let editorDiv = ref(null)
 let socket: NuxtSocket|undefined = undefined;
 let clients = ref([]);
+
+
 onMounted(() => {
   
   const ydoc = new Y.Doc()
@@ -53,8 +57,8 @@ onMounted(() => {
   
   provider.awareness.setLocalStateField('user', {
     name: props.name,
-    color: '#ecd444',
-    colorLight: '#ecd44433'
+    color: props.userColor,
+    colorLight: props.userLightColor
   })
   let startState = EditorState.create({
     doc: yText.toString(),
