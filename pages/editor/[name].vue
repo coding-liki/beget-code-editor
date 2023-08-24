@@ -1,8 +1,8 @@
 <template>
     <Editor
-        v-if="nuxtStorage.localStorage.getData('userName')"
+        v-if="nuxtStorage.localStorage!.getData('userName')"
         :room-name=$route.params.name
-        :name="nuxtStorage.localStorage.getData('userName')"
+        :name="nuxtStorage.localStorage!.getData('userName')"
         :websocket-server=runtimeConfig.public.websocketHost>
     </Editor>
 </template>
@@ -14,7 +14,7 @@
     const router = useRouter();
     const route = useRoute();
 
-    if(!nuxtStorage.localStorage.getData('userName')){
+    if(!nuxtStorage.localStorage!.getData('userName')){
         router.push("/?roomName="+route.params.name);
         
     }
