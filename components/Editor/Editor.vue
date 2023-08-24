@@ -1,7 +1,15 @@
 <template>
-    <div >{{roomName}} - {{name}} <div v-for="client in clients">{{client.user.name}}</div></div>
-  <div :id="id" class="code-editor" ref="editorDiv">
+  <div class="flex flex-col h-full w-full">
+      <div class="flex flex-row h-[70px] w-full flex-none">
+        <div class="flex-auto max-w-3/4">Комната - {{roomName}}</div>
+        <div class="flex flex-row flex-auto min-w-1/4 flex-wrap content-center">
+            <div v-for="client in clients" class="flex-auto flex flex-row"><div class="inline-block w-2 h-2" :style="{backgroundColor: client.user.color}" > </div>{{client.user.name}}</div>
+        </div>
+      </div>
+    <div :id="id" class="flex-auto overflow-auto max-h-[calc(100%-70px)]" ref="editorDiv">
+    </div>
   </div>
+
 </template>
 
 <script setup lang="ts">

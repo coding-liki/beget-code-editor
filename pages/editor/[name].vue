@@ -1,5 +1,9 @@
 <template>
-    <Editor v-if="nuxtStorage.localStorage.getData('userName')" :room-name=$route.params.name :name="nuxtStorage.localStorage.getData('userName')" :websocket-server=runtimeConfig.public.websocketHost>
+    <Editor
+        v-if="nuxtStorage.localStorage.getData('userName')"
+        :room-name=$route.params.name
+        :name="nuxtStorage.localStorage.getData('userName')"
+        :websocket-server=runtimeConfig.public.websocketHost>
     </Editor>
 </template>
 
