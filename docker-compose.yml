@@ -8,6 +8,7 @@ services:
             HOST: 0.0.0.0
             PORT: 8080
             NUXT_PUBLIC_WEBSOCKET_HOST: "ws://localhost:1234/"
+            NUXT_PUBLIC_EDITOR_WEBSOCKET_HOST: "ws://localhost:1234/"
     websocket:
         image: node:18-alpine
         command: npx y-websocket

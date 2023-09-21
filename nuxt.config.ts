@@ -1,6 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-    runtimeConfig: {public: {websocketHost: "ws://localhost:1234/"}},
+    runtimeConfig: {
+        public: {
+            websocketHost: "ws://localhost:1234/",
+            editorWebsocketHost: "http://localhost:3000"
+        }
+    },
     devtools: {enabled: true},
     modules: [
         '@nuxtjs/tailwindcss',
@@ -12,7 +17,7 @@ export default defineNuxtConfig({
         // module options
         sockets: [{
             name: 'main',
-            url: 'http://localhost:3000'
+            url: process.env.NUXT_PUBLIC_EDITOR_WEBSOCKET_HOST
         }]
     }
 })

@@ -52,7 +52,6 @@ import {autocompletion} from "@codemirror/autocomplete";
 import {LanguageSupport} from "@codemirror/language";
 import {uuidv4} from "lib0/random";
 import nuxtStorage from 'nuxt-storage';
-import {EventNames} from "socket.io-client/build/typed-events";
 
 
 const props = defineProps<{
