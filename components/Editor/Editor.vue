@@ -60,7 +60,8 @@ const props = defineProps<{
     name: string,
     userColor: string,
     userLightColor: string,
-    websocketServer: string
+    websocketServer: string,
+    editorWebsocketServer: string
 }>();
 
 let editorDiv = ref(undefined)
@@ -91,6 +92,50 @@ let language = new Compartment();
 let view: EditorView | undefined = undefined;
 
 let initialised = false;
+const ws = new WebSocket(props.editorWebsocketServer)
+
+class Server {
+    private ws: WebSocket;
+
+    constructor(ws) {
+        this.ws = ws;
+    }
+
+    send(method, data) {
+        if (this.ws.readyState !== this.ws.OPEN) {
+            setTimeout(() => this.send(method, data), 10);
+            return;
+        }
+        this.ws.send(JSON.stringify({method: method, data: data}));
+    }
+
+    process(message) {
+        let request = {};
+
+        try {
+            request = JSON.parse(message);
+        } catch (e) {
+            console.log(e);
+            return;
+        }
+        let methodTomethodMap = {
+            'changeLanguage': this.changeLanguage,
+        }
+
+        let methodToRun = methodTomethodMap[request.method];
+        if (methodToRun) {
+            methodToRun(request.data);
+        }
+    }
+
+    changeLanguage = (data) => {
+        changeLanguage(data.language);
+    }
+
+}
+
+let wsServer = new Server(ws);
+
 
 onMounted(() => {
 
@@ -132,15 +177,25 @@ onMounted(() => {
     });
 
 
+    ws.onopen = () => {
+        console.log('ws opened on browser')
+        ws.send('hello world')
+    }
+
+    ws.onmessage = (message) => {
+        console.log(`message received`, message.data)
+        wsServer.process(message.data);
+    }
+
     view = new EditorView({
         state: startState,
         parent: editorDiv.value,
     });
 
     setInterval(async () => {
-        await socket?.emitP('visitRoom', {
+        wsServer.send('visitRoom', {
             name: props.roomName
-        })
+        });
     }, 1000);
 });
 
@@ -160,7 +215,7 @@ onUpdated(() => {
         nuxtStorage.localStorage.setData('clientList', clientList, 24, 'h')
 
         try {
-            let clientRegisterResult = await socket?.emitP('registerClient', {
+            wsServer.send('registerClient', {
                 name: props.name,
                 uuid: clientList[props.name].uuid
             });
@@ -172,21 +227,18 @@ onUpdated(() => {
             let roomKeys = nuxtStorage.localStorage.getData('roomKeys') ?? {};
             roomKeys[props.roomName] = roomKeys[props.roomName] ?? uuidv4();
 
-            let registerResult = await socket?.emitP('registerRoom', {
+            wsServer.send('registerRoom', {
                 name: props.roomName,
                 key: roomKeys[props.roomName]
             });
 
-            if (registerResult.isOwner) {
-                nuxtStorage.localStorage.setData('roomKeys', roomKeys);
-            }
+
+            nuxtStorage.localStorage.setData('roomKeys', roomKeys);
         } catch (e) {
             console.log("error while registering room", e);
         }
 
-        socket?.on("changeLanguage", (data) => {
-            changeLanguage(data.language);
-        });
+
     }
 
     initialise();
@@ -209,9 +261,7 @@ function changeLanguage(languageName: string) {
 }
 
 function onSelect(event: Event) {
-    socket?.emit('changeLanguage', {language: event.target?.value, roomName: props.roomName}, (resp) => {
-        console.log(resp);
-    })
+    wsServer.send('changeLanguage', {language: event.target?.value, roomName: props.roomName});
 }
 
 

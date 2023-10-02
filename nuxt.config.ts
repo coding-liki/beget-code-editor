@@ -3,7 +3,7 @@ export default defineNuxtConfig({
     runtimeConfig: {
         public: {
             websocketHost: "ws://localhost:1234/",
-            editorWebsocketHost: "http://localhost:3000"
+            editorWebsocketHost: "http://localhost:4000"
         }
     },
     devtools: {enabled: true},

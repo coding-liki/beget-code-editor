@@ -1,15 +1,24 @@
 version: "3.8"
 services:
     app:
-        build: .
+        build:
+            dockerfile: ./Dockerfile
         ports:
             - "3000:8080"
         environment:
             HOST: 0.0.0.0
             PORT: 8080
             NUXT_PUBLIC_WEBSOCKET_HOST: "ws://localhost:1234/"
-            NUXT_PUBLIC_EDITOR_WEBSOCKET_HOST: "ws://localhost:1234/"
-    websocket:
+            NUXT_PUBLIC_EDITOR_WEBSOCKET_HOST: "ws://localhost:4000/"
+    ws-app:
+        build:
+            dockerfile: ./WsDockerfile
+        ports:
+            - "4000:4000"
+        environment:
+            HOST: 0.0.0.0
+            PORT: 4000
+    y-websocket:
         image: node:18-alpine
         command: npx y-websocket
         ports:

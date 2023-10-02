@@ -29,6 +29,7 @@
     "@codemirror/lint": "^6.4.0",
     "nuxt-socket-io": "^3.0.13",
     "nuxt-storage": "^1.2.2",
+    "ws": "^8.14.2",
     "y-codemirror.next": "^0.3.2",
     "y-websocket": "^1.5.0"
   }
