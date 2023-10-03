@@ -13,16 +13,17 @@ wss.getUniqueID = function () {
     return s4() + s4() + '-' + s4();
 };
 
-wss.on('connection', function connection(ws) {
+wss.on('connection', (ws) => {
     let server = new Server(ws);
     ws.id = wss.getUniqueID();
     
-    ws.on('message', function message(data) {
-        console.log('received: %s', data);
+    ws.on('message', (data) => {
         server.process(data);
     });
-
-    ws.send("connected");
+    ws.on('close',(data) => {
+        server.disconnect(data);
+        console.log("disconnected "+ws.id);
+    });
 });
 
 class Server {
@@ -61,8 +62,6 @@ class Server {
         if (!client) {
             ClientStorage.addClient(message.uuid, message.name, this.ws.id);
         }
-
-        console.log(this.ws);
         
         ClientStorage.setWsClientId(message.uuid, this.ws.id);
 
@@ -79,6 +78,10 @@ class Server {
         if (!room) {
             RoomStorage.addRoom(message.name, client.uuid, message.key);
             room = RoomStorage.getRoom(message.name);
+        } else {
+            this.send('changeLanguage', {
+                language: room.language,
+            });
         }
 
         EventHandlerStorage.addClientEventHandler(client.uuid, 'changeLanguage', (eventData) => {
@@ -92,13 +95,14 @@ class Server {
         return {
             isOwner: room.owner === client.uuid
         };
-
     }
     changeLanguage = (message) => {
         EventDispatcher.dispatch('changeLanguage', {
             roomName: message.roomName,
             language: message.language
         });
+
+        RoomStorage.changeRoomLanguage(message.roomName, message.language);
 
         return {status: 'ok', language: message.language, rooms: Storage.get('rooms', {})};
         }
@@ -115,7 +119,7 @@ class Server {
 
         return {visited: !!room}
     }
-    disconnect(message) {
+    disconnect = (message) => {
         let client = ClientStorage.getClientByWsClientId(this.ws.id);
         let clientHandlers = EventHandlerStorage.getClientEventHandlers(client.uuid, 'changeLanguage');
         clientHandlers.forEach((handler) => {

@@ -14,8 +14,6 @@ export default class RoomStorage extends Storage {
             rooms[name] = RoomStorage.createRoom(name, owner, key);
         }
 
-        RoomStorage.setRooms(rooms);
-
         RoomStorage.visitRoom(name);
     }
 
@@ -23,7 +21,13 @@ export default class RoomStorage extends Storage {
         let rooms = RoomStorage.getRooms();
         if (rooms[name]) {
             rooms[name].visitedAt = Date.now() / 1000;
-            RoomStorage.setRooms(rooms);
+        }
+    }
+
+    static changeRoomLanguage(name, language){
+        let rooms = RoomStorage.getRooms();
+        if(rooms[name]){
+            rooms[name].language = language;
         }
     }
 
@@ -35,15 +39,12 @@ export default class RoomStorage extends Storage {
         return RoomStorage.get('rooms', {});
     }
 
-    static setRooms(rooms) {
-        RoomStorage.set('rooms', rooms);
-    }
-
     static createRoom(name, owner, key) {
         return {
             name: name,
             owner: owner,
-            key: key
+            key: key,
+            language: 'plain'
         };
     }
 };

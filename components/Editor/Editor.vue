@@ -82,7 +82,7 @@ let fontSizeList = [
     '20px',
     '22px',
     '24px',
-]
+];
 
 let selectedFontSize = ref('14px');
 
@@ -171,19 +171,11 @@ onMounted(() => {
         ]
     })
 
-    socket = ctx.$nuxtSocket({
-        name: "editorSocket",
-        channel: "/editorSocket",
-    });
-
-
     ws.onopen = () => {
         console.log('ws opened on browser')
-        ws.send('hello world')
     }
 
     ws.onmessage = (message) => {
-        console.log(`message received`, message.data)
         wsServer.process(message.data);
     }
 
@@ -206,7 +198,6 @@ onUpdated(() => {
         }
 
         initialised = true;
-        let hasRoom = {};
 
         let clientList = nuxtStorage.localStorage.getData('clientList') ?? {};
 
@@ -232,22 +223,16 @@ onUpdated(() => {
                 key: roomKeys[props.roomName]
             });
 
-
             nuxtStorage.localStorage.setData('roomKeys', roomKeys);
         } catch (e) {
             console.log("error while registering room", e);
         }
-
-
     }
 
     initialise();
-
-
 });
 
 function changeLanguage(languageName: string) {
-
     if (view) {
         let languageExtension: { [key: string]: LanguageSupport } = {
             'php': php({plain: true}),
@@ -263,7 +248,6 @@ function changeLanguage(languageName: string) {
 function onSelect(event: Event) {
     wsServer.send('changeLanguage', {language: event.target?.value, roomName: props.roomName});
 }
-
 
 </script>
 

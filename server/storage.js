@@ -2,7 +2,7 @@ export default class Storage {
     static data = {};
 
     static get(name, defaultValue = undefined) {
-        return Storage.data[name] ?? defaultValue;
+        return Storage.data[name] ??= defaultValue;
     }
 
     static set(name, value) {

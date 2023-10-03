@@ -10,9 +10,6 @@ export default class ClientStorage extends Storage {
             wsClientId: wsClientId
         };
         wsClientIdToClientIdMap[wsClientId] = uuid;
-
-        ClientStorage.set('clients', clients);
-        ClientStorage.set('wsClientIdToClientIdMap', wsClientIdToClientIdMap);
     }
 
     static getClient(uuid) {
@@ -40,10 +37,6 @@ export default class ClientStorage extends Storage {
         if (clients[uuid]) {
             clients[uuid].wsClientId = wsClientId;
             wsClientIdToClientIdMap[wsClientId] = uuid;
-
-            ClientStorage.set('clients', clients);
-            ClientStorage.set('wsClientIdToClientIdMap', wsClientIdToClientIdMap);
-
         }
     }
 }
