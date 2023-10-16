@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import {EditorState, Compartment} from "@codemirror/state";
+import {EditorState, Compartment, Extension} from "@codemirror/state";
 import {basicSetup} from "codemirror";
 import {php} from "@codemirror/lang-php";
 import {cpp} from "@codemirror/lang-cpp";
@@ -49,10 +49,34 @@ import {ref} from "vue";
 import {NuxtSocket} from "nuxt-socket-io";
 import {WebsocketProvider} from "y-websocket";
 import {autocompletion} from "@codemirror/autocomplete";
-import {LanguageSupport} from "@codemirror/language";
+import {HighlightStyle, LanguageSupport, StreamLanguage, syntaxHighlighting} from "@codemirror/language";
 import {uuidv4} from "lib0/random";
 import nuxtStorage from 'nuxt-storage';
+import {go} from "@codemirror/legacy-modes/mode/go";
+import {css} from "@codemirror/lang-css";
+import {sass} from "@codemirror/lang-sass";
+import {mermaid, mindmapTags} from "codemirror-lang-mermaid";
 
+import {tags as t} from '@lezer/highlight';
+import {python} from "@codemirror/lang-python";
+import {less} from "@codemirror/lang-less";
+import {html} from "@codemirror/lang-html";
+import {protobuf} from "@codemirror/legacy-modes/mode/protobuf";
+import {MySQL, PostgreSQL, sql} from "@codemirror/lang-sql";
+
+const mermaidStyle = HighlightStyle.define([
+    {tag: mindmapTags.diagramName, color: '#9650c8'},
+    {tag: mindmapTags.lineText1, color: '#ce9178'},
+    {tag: mindmapTags.lineText2, color: 'green'},
+    {tag: mindmapTags.lineText3, color: 'red'},
+    {tag: mindmapTags.lineText4, color: 'magenta'},
+    {tag: mindmapTags.lineText5, color: '#569cd6'},
+    {tag: t.typeName, color: '#9650c8'},
+    {tag: t.lineComment, color: '#ce9178'},
+    {tag: t.number, color: 'green'},
+    {tag: t.keyword, color: '#569cd6'},
+    {tag: t.string, color: 'magenta'},
+]);
 
 const props = defineProps<{
     id?: string,
@@ -70,8 +94,18 @@ let clients = ref([]);
 let languages = [
     {'value': 'plain', 'name': 'Plain Text'},
     {'value': 'php', 'name': 'PHP'},
-    {'value': 'js', 'name': 'JavaScript'},
+    {'value': 'js', 'name': 'Jsx/Tsx'},
+    {'value': 'go', 'name': 'Go'},
+    {'value': 'python', 'name': 'Python'},
+    {'value': 'html', 'name': 'Html'},
+    {'value': 'css', 'name': 'css'},
+    {'value': 'sass', 'name': 'Sass'},
+    {'value': 'scss', 'name': 'Scss'},
+    {'value': 'less', 'name': 'Less'},
     {'value': 'mermaid', 'name': 'Mermaid'},
+    {'value': 'protobuf', 'name': 'Protobuf'},
+    {'value': 'mysql', 'name': 'MySQL'},
+    {'value': 'postgresql', 'name': 'PostgreSQL'},
 ];
 
 let fontSizeList = [
@@ -234,9 +268,27 @@ onUpdated(() => {
 
 function changeLanguage(languageName: string) {
     if (view) {
-        let languageExtension: { [key: string]: LanguageSupport } = {
+        let languageExtension: { [key: string]: Extension } = {
             'php': php({plain: true}),
-            'js': javascript()
+            'js': javascript({
+                jsx: true,
+                typescript: true
+            }),
+            'go': StreamLanguage.define(go),
+            'css': css(),
+            'sass': sass({indented: true}),
+            'scss': sass({indented: false}),
+            'mermaid': [mermaid(), syntaxHighlighting(mermaidStyle)],
+            'python': python(),
+            'less': less(),
+            'html': html(),
+            'protobuf': StreamLanguage.define(protobuf),
+            'mysql': sql({
+                dialect: MySQL
+            }),
+            'postgresql': sql({
+                dialect: PostgreSQL
+            })
         }
         view.dispatch({
             effects: language.reconfigure(languageExtension[languageName] ?? [])
